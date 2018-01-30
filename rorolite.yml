@@ -1,0 +1,8 @@
+runtime: python3-keras
+host: rorolite.do.rorodata.net
+user: anand
+
+services:
+  - name: api
+    function: background_removal.predict
+    port: 8080

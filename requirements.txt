@@ -1,0 +1,4 @@
+# Firefly doesn't support cross-origin-resource-sharing, which is required 
+# to use the API directly from JS. This git branch adds that support. 
+# This work-around is required until that is merged with firefly.
+-e git+git://github.com/rorodata/firefly.git@cors#egg=firefly-python
