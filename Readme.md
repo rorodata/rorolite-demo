@@ -6,7 +6,7 @@ Sample ML application to demo [rorolite][1].
 
 # How to use
 
-Edit the [rorolite.yml][] and set the `host` and `user`.
+Edit the [rorolite.yml](rorolite.yml) and set the `host` and `user`.
 
 Provision the server to install all required software.
 
@@ -19,7 +19,7 @@ Deploy the application and all the services.
 	Services are live at:
 	  api -- http://rorolite.do.rorodata.net:8080/	
 
-You the firefly client to access the API. See [test.py][] for more details.
+You the firefly client to access the API. See [test.py](test.py) for more details.
 
 
 	
