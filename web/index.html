@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rorodata API Showcase</title>
+	<link rel="stylesheet" type="text/css" href="/css/semantic.css">
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
+	<link rel="stylesheet" href="/css/monokai-sublime.css ">
+</head>
+<body>
+	<div class="ui container">
+		
+<div class="ui raised container basic segment">
+  <h1 class="ui header">Background Removal</h1>
+  <span>Removes background of an image</span>
+</div>
+
+<div class="ui raised container basic segment">
+    
+<div class="ui stackable grid">
+  <div class="row">
+    <div class="two wide column roro-background-secondary">
+        <div class="one column row input-images">
+          
+            <div class="ui column">
+              <a class="ui image"><img src="https://rorodata-tmp.s3.amazonaws.com/bird.jpg"></a>
+            </div>
+          
+            <div class="ui column">
+              <a class="ui image"><img src="https://rorodata-tmp.s3.amazonaws.com/girl.jpg"></a>
+            </div>
+          
+            <div class="ui column">
+              <a class="ui image"><img src="https://rorodata-tmp.s3.amazonaws.com/liomessi.jpg"></a>
+            </div>
+          
+          <div class="ui item" id="new-image">
+            <a class="ui image"><img src="/images/gray.jpg"></a>
+          </div>
+        </div>
+        <div style="position: absolute; bottom: 0; padding-bottom: 10px;">
+          <div class="ui icon button" id="add-image" data-content="Add your own image">
+            <i class="add icon"></i>
+          </div>
+        </div>
+        <div class="ui modal" id="add-image-modal">
+          <div class="header">Add your own image</div>
+            <div class="scrolling content">
+              <p>Give us a link to an image on the web</p>
+              <div class="ui fluid action input">
+                <input placeholder="URL..." type="text">
+                <button class="ui primary button">Add</button>
+              </div>
+              <div class="ui negative hidden message">
+                <p>That looks like an invalid image.</p>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="ten wide column roro-background-main">
+      <div class="ui centered grid">
+        <div class="row roro-img-row">
+          <div class="ui centered basic segment output-img">
+            <img class="ui middle aligned fluid image output-image" src="/images/gray.jpg">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="four wide column">
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+  .ui.input-images {
+    padding-top: 1rem;
+  }
+  .input-imges a.image {
+    cursor: pointer;
+  }
+  #new-image {
+    visibility: hidden;
+  }
+  #new-image.active {
+    visibility: visible;
+  }
+
+  .input-images .column {
+    margin: 1rem 0;
+  }
+</style>
+
+
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+	<script src="/js/semantic.min.js"></script>
+	<script src="/js/style.js"></script>
+	<script src="/js/roro.js"></script>
+
+	
+
+<script type="text/javascript">
+$(function() {
+
+  function process_data(data) {
+    $(".output-img").removeClass("loading");
+    $(".output-image").attr("src", "data:image/png;base64," + data['data']);
+  }
+
+  function make_cell(value) {
+    var e = $("<span>");
+    if (typeof(value) == "number") {
+      e = e.addClass("cell-number").html(value.toFixed(2));
+    }
+    else if (typeof(value) == "string") {
+      e = e.addClass("cell-string").html(value);
+    }
+    else {
+      e = e.addClass("cell-object").html(value);
+    }
+    return e;
+  }
+
+  $('.input-images').on("click", "a img", function(){
+    // Clear border in old selection
+    $(".input-images a").removeClass("bordered");
+
+    // Add border to current selection
+    $(this).parent().addClass("bordered");
+    
+    $(".output-img").addClass("loading");
+    var args = {
+      "image": {
+        "url": this.src
+      }
+    };
+    var url = "http://" + document.location.hostname + ":8080";
+    var api = roro.client(url);
+    api.invoke("predict", args, process_data);
+  });
+
+  $("#add-image").click(function() {
+    $("#add-image-modal input").val("");
+    $("#add-image-modal .message")
+    .removeClass("visible")
+      .addClass("hidden");
+    $("#add-image-modal").modal("show");
+  })
+
+  $("#new-image img")
+    .on('error', function() {
+      // hide the added image
+      $("#new-image").removeClass("active");
+
+      // show error in the dialog
+      $("#add-image-modal .message")
+      .removeClass("hidden")
+        .addClass("visible");
+
+      // and show the dialog
+      $("#add-image-modal").modal("show");
+
+      // also remove the image in the output
+      $(".output-img").removeClass("loading");
+    });
+
+  $("#add-image-modal button").click(function() {
+    $("#add-image-modal").modal("hide");
+
+    var url = $("#add-image-modal input").val();
+    $("#new-image img").attr("src", url);
+    $("#new-image").addClass("active");
+    setTimeout(function() {
+      $("#new-image a img").trigger("click");
+    }, 0);
+  });
+
+});
+</script>
+
+
+</body>
+</html>
